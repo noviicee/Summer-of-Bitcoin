@@ -22,7 +22,7 @@ print(dataframe.describe())
 
 """actual approach
 """
-def sort_trans(dataframe, maxfee, minwght):
+def sort_dataframe(dataframe, maxfee, minwght):
     """Sorting the Dataframe using sort_values for Fee & Weight.
     Maximise the fee & minimise the weight
     """
@@ -40,16 +40,16 @@ def check_weight(x):
         return False
 
 
-def check_list(x):
+def check_existing_list(x):
     """Checks if the id is already existing in the final set.
     """
-    if str(x) in final_set_of_txids:
+    if str(x) in final_list_of_txids:
         return True
     else:
         return False
 
-def check_parent(x):
-    """Checks if the parent id is already existing in the final set.
+def check_existing_parent(x):
+    """Check if the parent id is already existing in the final set.
     If it exists, go to that transaction and include it in output block.
     Else,
     add parent to the list(if eligible) before adding the child.
@@ -57,39 +57,39 @@ def check_parent(x):
     if str(x[3]) != "nan":
         parent_list = str(x[3]).split(";")
         for i in parent_list:
-            if(check_list(i)):
+            if(check_existing_list(i)):
                 continue
             else:
-                txnindex = dataframe[dataframe['tx_id'] == i].index.item()
-                k = dataframe.loc[txnindex]
-                check_add_txn(k)
+                txind = dataframe[dataframe['tx_id'] == i].index.item()
+                k = dataframe.loc[txind]
+                check_add_txid(k)
 
 # Adding appropiate txids to block.txt
 def add_to_block(x):
     global min_weight
-    txnID = x[0]
+    txID = x[0]
     weight = x[2]
     min_weight += weight
-    final_set_of_txids.append(txnID)
+    final_list_of_txids.append(txID)
 
-def check_add_txn(x):
+def check_add_txid(x):
     if(check_weight(x)):
-        if(not check_list(x)):
-            check_parent(x)
+        if(not check_existing_list(x)):
+            check_existing_parent(x)
             if(check_weight(x)):
                 add_to_block(x)
 
 
 def Main(dataframe):
-    sorted_transactions = sort_trans(dataframe, "fee", "weight")
+    sorted_transactions = sort_dataframe(dataframe, "fee", "weight")
     for i in range(len(sorted_transactions)):
-        txnVar =  sorted_transactions.loc[i]
-        check_add_txn(txnVar)
+        txVar =  sorted_transactions.loc[i]
+        check_add_txid(txVar)
 
 
-def write_to_file(fin_list):
+def write_to_output_file(final_list):
     file = open("block.txt","a")
-    for i in fin_list:
+    for i in final_list:
         file.write(str(i) + '\n')
     file.close()
 
@@ -97,9 +97,9 @@ def write_to_file(fin_list):
 if __name__=="__main__":
     highest_weight = 4000000
     min_weight = 0
-    final_set_of_txids = []
+    final_list_of_txids = []
 
     data = dataframe
     Main(data)
 
-    write_to_file(final_set_of_txids)
+    write_to_output_file(final_list_of_txids)

@@ -6,7 +6,7 @@
 
 ## Representration of the folder hierarchy-
 
-* [sb_README.pdf](sb_README.pdf) : Problem Descriptiion.
+* [sb_README.pdf](sb_README.pdf) : Problem Description.
 * [block_sample.txt](block_sample.txt) : Sample format for output of Block Transactions.
 * [mempool.csv](mempool.csv) : Input Dataset for the mempool.
 
